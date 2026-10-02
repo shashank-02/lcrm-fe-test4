@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* RGB channels so Tailwind alpha modifiers (bg-primary/10) work; the plain vars are kept for inline styles */
+  --bg-rgb: 247 248 250; --surface-rgb: 255 255 255; --surface-2-rgb: 241 243 246; --border-rgb: 227 231 236;
+  --text-rgb: 20 33 61; --text-2-rgb: 85 98 122; --text-3-rgb: 138 150 171;
+  --primary-rgb: 24 95 165; --primary-hover-rgb: 19 76 133; --primary-soft-rgb: 232 240 250; --navy-rgb: 26 58 92;
+  --success-rgb: 27 138 90; --warning-rgb: 183 121 31; --danger-rgb: 194 59 59; --info-rgb: 8 145 178;
+  --bg: rgb(var(--bg-rgb)); --surface: rgb(var(--surface-rgb)); --surface-2: rgb(var(--surface-2-rgb)); --border: rgb(var(--border-rgb));
+  --text: rgb(var(--text-rgb)); --text-2: rgb(var(--text-2-rgb)); --text-3: rgb(var(--text-3-rgb));
+  --primary: rgb(var(--primary-rgb)); --primary-hover: rgb(var(--primary-hover-rgb)); --primary-soft: rgb(var(--primary-soft-rgb)); --navy: rgb(var(--navy-rgb));
+  --success: rgb(var(--success-rgb)); --warning: rgb(var(--warning-rgb)); --danger: rgb(var(--danger-rgb)); --info: rgb(var(--info-rgb));
+  --ring: rgba(24, 95, 165, 0.35);
+  --toggle-off: #C9D1DC;
+  color-scheme: light;
+}
+.dark {
+  --bg-rgb: 15 22 32; --surface-rgb: 22 32 44; --surface-2-rgb: 29 41 56; --border-rgb: 38 52 71;
+  --text-rgb: 230 235 242; --text-2-rgb: 168 179 197; --text-3-rgb: 110 125 148;
+  --primary-rgb: 74 144 217; --primary-hover-rgb: 106 165 228; --primary-soft-rgb: 34 56 84; --navy-rgb: 26 58 92;
+  --success-rgb: 52 179 122; --warning-rgb: 209 154 58; --danger-rgb: 224 90 90; --info-rgb: 34 184 212;
+  --ring: rgba(74, 144, 217, 0.4);
+  --toggle-off: #3B4A60;
+  /* Native controls (select option lists, date pickers, scrollbars) render dark instead of browser-default white */
+  color-scheme: dark;
+}
+
+@layer base {
+  html { font-size: 14px; }
+  /* The app shell (#root > .app-layout) owns scrolling: the document itself never scrolls. */
+  html, body, #root { height: 100%; }
+  body { overflow: hidden; }
+  body { @apply bg-bg text-ink font-sans antialiased; font-feature-settings: 'tnum' 1, 'cv11' 1; }
+  * { border-color: var(--border); }
+  ::selection { background: var(--primary-soft); }
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; border-radius: 4px; }
+  input, select, textarea, button { font: inherit; color: inherit; }
+  /* Native select menus follow the theme in every browser that honours option styling (Chrome, Edge, Firefox) */
+  select, option, optgroup { background-color: var(--surface); color: var(--text); }
+  option:checked, option:hover { background-color: var(--primary-soft); color: var(--text); }
+  option:disabled { color: var(--text-3); }
+  optgroup { font-weight: 600; color: var(--text-2); }
+  input[type='date']::-webkit-calendar-picker-indicator, input[type='datetime-local']::-webkit-calendar-picker-indicator { opacity: .6; cursor: pointer; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+}
+
+@layer components {
+  .card { @apply bg-surface border border-line rounded-lg; }
+  .input { @apply w-full h-9 px-3 rounded-md border border-line bg-surface text-ink placeholder:text-ink-3 transition-colors hover:border-ink-3 focus:border-primary disabled:opacity-60 disabled:cursor-not-allowed; }
+  .input-sm { @apply h-8 px-2.5 text-[13px]; }
+  .label { @apply block text-[12.5px] font-medium text-ink-2 mb-1; }
+  .th { @apply text-left text-[12px] font-semibold text-ink-2 px-3 py-2 whitespace-nowrap select-none bg-surface-2 border-b border-line sticky top-0 z-10; }
+  .td { @apply px-3 py-2 text-[13px] whitespace-nowrap border-b border-line align-middle; }
+  .pill { @apply inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md border border-line bg-surface text-[12.5px] font-medium text-ink-2 hover:border-ink-3 transition-colors; }
+  .menu { @apply absolute z-40 mt-1 min-w-[180px] card shadow-pop py-1 text-[13px]; }
+  .menu-item { @apply w-full text-left px-3 py-1.5 hover:bg-surface-2 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed; }
+  .scroll-thin { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+  .scroll-hidden { scrollbar-width: none; -ms-overflow-style: none; }
+  .scroll-hidden::-webkit-scrollbar { display: none; }
+  .sticky-col { position: sticky; left: 0; z-index: 5; background: var(--surface); box-shadow: 1px 0 0 var(--border); }
+  tr:hover .sticky-col { background: var(--surface-2); }
+  .touch-target { min-height: 40px; }
+}
+
+/* ---------- Document viewer surfaces (always light: never paint dark-mode colours over document content) ---------- */
+.docx-host .docx-wrapper { background: transparent; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.docx-host section.docx { background: #fff; color: #111; box-shadow: 0 8px 24px -8px rgba(0,0,0,.4); margin: 0 auto; }
+.sheet-host table { border-collapse: collapse; font-size: 12.5px; background: var(--surface); color: var(--text); min-width: 100%; }
+.sheet-host td, .sheet-host th { border: 1px solid var(--border); padding: 4px 8px; white-space: nowrap; max-width: 420px; overflow: hidden; text-overflow: ellipsis; }
+.sheet-host tr:first-child td { position: sticky; top: 0; background: var(--surface-2); font-weight: 600; z-index: 1; }
